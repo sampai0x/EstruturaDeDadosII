@@ -1,1 +1,5 @@
+Pré-ordem:A->B->D->I->E->F->J->M->C->G->K->L->H
 
+
+
+Pós-ordem:I->D->E->M->J->F->B->K->L->G->H->C->A
