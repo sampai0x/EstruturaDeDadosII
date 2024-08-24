@@ -1,0 +1,16 @@
+PSEUDOCODIGO
+
+int ContarNo(int no)
+ se no = null
+  retorna 0
+
+se no.subarvore = null
+ retorna 1
+
+
+ctd <- 0
+
+para cada subarvore em no.subarvore
+ctd <- ctd + ContarNo(subarvore)
+
+retorna ctd
