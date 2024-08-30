@@ -52,8 +52,8 @@ void emOrdem(No *raiz){
 }
 
 // Rotina de busca (pesquisa) na BST
-No* pesquisar(No *raiz, int chavePesquisa) {
-    No *atual = raiz;
+No* pesquisar(No *raiz, int chavePesquisa){
+	No *atual = raiz;
 
     while (atual != NULL) {
         if (chavePesquisa == atual->id) {
@@ -66,6 +66,7 @@ No* pesquisar(No *raiz, int chavePesquisa) {
     }
 
     return NULL; // Valor não encontrado
+	
 }
 
 // Rotina de inserção na BST
@@ -114,8 +115,120 @@ void inserir(No **raiz, int chave){
 }
 
 // Rotina de apoio para remoção em BST
-// trabalhar com a subárvore esquerda ou com a subárvore direnta
+// trabalhar com a subárvore esquerda ou com a subárvore direita
+No* achaMaior(No *raiz){
+	No *atual = raiz;
+	
+	if(!estaVazia(raiz)){
+		while(atual->dir != NULL){
+			atual = atual->dir;
+		}
+	}
+	
+	return atual;
+}
 
+// Rotina de remoção
+// 3 casos (folha, 1 filho, 2 filhos)
+int remover(No **raiz, int chave){
+	No *atual;
+	No *maior;
+	int valor;
+	
+	if(estaVazia(*raiz) == 1){
+		return 1;
+	}
+	
+	atual = pesquisar(*raiz, chave); //busca o endereço do nó a ser removido
+	/*se o nó não for encontrado*/
+	if(atual == NULL){
+		printf("Noh %d nao encontrado\n", chave);
+		return 0;
+	}
+	
+	/* CASO 1: remover um noh folha */
+	if(atual->esq == NULL && atual->dir == NULL){
+		/* se o nó a ser removido é a raiz */
+		if(atual->pai == NULL){
+			inicializar(raiz);
+			free(atual);
+			return 1;
+		}
+		
+		/* nó a ser removido não é a raiz */
+		if(chave < atual->pai->id){
+			atual->pai->esq = NULL;
+		}else{
+			atual->pai->dir = NULL;
+		}
+		
+		free(atual);
+		return 1;
+	}//encerra o caso 1 de remoção
+	
+	/* CASO 2: remover um nó com um filho */
+	if((atual->esq != NULL && atual->dir == NULL) || (atual->dir != NULL && atual->esq == NULL)){
+		
+		/* caso o nó atual for a raiz da árvore */
+		if(atual->pai == NULL){
+			/* se o filho está na subárvore esquerda da raiz */
+			if(atual->esq != NULL){
+				*raiz = atual->esq;
+			}else{ /* o flho está na subárvore direita da raiz */
+				*raiz = atual->dir;
+			}
+		}
+		
+		/* caso o nó atual não for a raiz */
+		else{
+			/* caso o nó atual for o filho da esquerda do pai */
+			if(atual == atual->pai->esq){
+				
+				/* caso o filho do atual estiver na subárvore esquerda */
+				if(atual->esq != NULL){
+					atual->pai->esq = atual->esq;
+					atual->esq->pai = atual->pai;
+				}else{ //caso o filho do atual estiver na subárvore direita
+					atual->pai->esq = atual->dir;
+					atual->dir->pai = atual->pai;
+				}
+			}//encerra o if do atual filho a esquerda
+			
+			/* caso o nó atual for filho a direita do pai */
+			else if(atual == atual->pai->dir){
+				/* caso o filho do atual estiver na subárvore esquerda */
+				if(atual->esq != NULL){
+					atual->pai->dir = atual->esq;
+					atual->esq->pai = atual->pai;
+				}else{ //caso o filho do atual estiver na subárvore direita
+					atual->pai->dir = atual->dir;
+					atual->dir->pai = atual->pai;
+				}
+			}//fim do if(atual == atual->pai->dir)
+			
+		}// fim do else atual != raiz
+		
+		free(atual);
+			return 1;
+			
+		
+	}// fim do caso 2
+	
+	/* CASO 3: remover um nó com dois filhos */
+	if(atual->esq != NULL && atual->dir != NULL){
+		/* achar o maior elemento da subárvore esquerda */
+		maior = achaMaior(atual->esq);
+		
+		/* trocar os dados do maior elemento encontrado com os dados do nó a ser removido */
+		valor = maior->id;
+		
+		remover(raiz, maior->id);
+		
+		/* substituir dados do maior elemento para o elemento atual */
+		atual->id = valor;
+	}// fim do caso 3
+	
+}// fim da rotina de remoção
 
 
 
@@ -232,6 +345,3 @@ int main() {
     return 0;
 
 } /* fim do main */
-
-
-
